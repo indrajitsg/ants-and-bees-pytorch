@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+# Data folders
+temp/
+data/
+outputs/
+results/
+
 # Distribution / packaging
 .Python
 build/
@@ -99,6 +105,10 @@ venv.bak/
 
 # mkdocs documentation
 /site
+
+# Pycharm editor settings
+.idea
+.DS_Store
 
 # mypy
 .mypy_cache/
