@@ -1,0 +1,22 @@
+{
+    "lr": 0.001,
+    "momentum": 0.9,
+    "weight_decay": 5e-4,
+
+    "step_size": 1,
+    "gamma": 0.1,
+    "num_epochs": 300,
+    "patience": 30,
+    "rop_factor": 0.1,
+    "rop_patience": 10,
+    "rop_verbose": False,
+    "rop_threshold": 0.0001,
+    "rop_cooldown": 0,
+    "epoch_num": 40,
+    "history": "history.pkl",
+    "log_dir": "logging",
+    "batch_log": false,
+    "batch_log_interval": 10,
+    "val_interval": 1,
+    "seed": 317
+}
