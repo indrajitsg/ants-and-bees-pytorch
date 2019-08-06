@@ -29,5 +29,8 @@ for d, la in data_loader['train']:
     d, la = d.to(device), la.to(device)
     out = model1(d)
     out = out.view(out.size(0), -1)
-    trn_labels.extend(la.cpu())
+    trn_labels.extend(la.cpu().data())
     trn_vgg_features.extend(out.cpu().data())
+
+print(trn_labels)
+print(trn_vgg_features)
