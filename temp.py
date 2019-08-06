@@ -32,7 +32,7 @@ for d, la in data_loader['train']:
 
     out = out.view(out.size(0), -1)
     trn_labels.extend(la)
-    trn_vgg_features.extend(out.cpu().data().numpy().tolist())
+    trn_vgg_features.extend(out.cpu().data.numpy().tolist())
     # final_features.extend(o.cpu().data.numpy().tolist())
 
 print(trn_labels)
