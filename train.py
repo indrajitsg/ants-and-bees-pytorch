@@ -11,17 +11,6 @@ from data_loader.data_loader import get_data_loader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 import torch
-import torch.nn.functional as F
-import time
-from datetime import datetime
-import os
-import copy
-
-import pickle
-
-from utils.util import adjust_learning_rate
-from utils.util import model_snapshot
-from utils.util import ensure_dir
 
 
 parser = argparse.ArgumentParser(description='Test your model')
@@ -56,9 +45,12 @@ def main():
 
     # load dataset
     data_loaders = get_data_loader()
+    patience_counter = 0
 
     # load model
+    print("Loading model...")
     model = resnet18(pretrained=False, num_classes=2)
+    print("Model loading complete")
 
     # define loss criterion
     criterion = nn.CrossEntropyLoss()
@@ -100,11 +92,11 @@ def main():
         patience_counter = 0
 
     train_model(model = model, data_loaders=data_loaders, device=device, criterion=criterion,
-                optimizer=optimizer, scheduler=scheduler, resume=args["resume"], new_model=args["output_model"],
-                num_epochs=config["num_epochs"], patience=config["patience"], epoch=epoch,
-                best_accuracy=best_accuracy, best_loss=best_loss, train_losses=train_losses,
-                train_accuracy=train_accuracy, val_losses=val_losses, val_accuracy=val_accuracy,
-                elapsed_time=elapsed_time, patience_counter=patience_counter, checkpoint=config["checkpoint"],
+                optimizer=optimizer, scheduler=scheduler, num_epochs=config["num_epochs"],
+                patience=config["patience"], epoch=epoch, best_accuracy=best_accuracy,
+                best_loss=best_loss, train_losses=train_losses, train_accuracy=train_accuracy,
+                val_losses=val_losses, val_accuracy=val_accuracy, elapsed_time=elapsed_time,
+                patience_counter=patience_counter, checkpoint=config["checkpoint"],
                 best_model=config["best_model"])
 
 
