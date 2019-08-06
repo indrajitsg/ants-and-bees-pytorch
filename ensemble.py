@@ -7,7 +7,7 @@ from model.alexnet import alexnet
 from data_loader.data_loader import get_data_loader
 from model.utils import LayerActivations
 from torch.utils.data import DataLoader
-
+from torch.utils.data.dataset import Dataset
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -30,7 +30,7 @@ for p in model2.parameters():
     p.requires_grad = False
 
 # print(model2)
-model3 = nn.Sequential(*list(model3.children())[:-2])
+model3 = nn.Sequential(*list(model3.children())[:-1])
 model3 = model3.to(device)
 model3.train(False)
 for p in model3.parameters():
