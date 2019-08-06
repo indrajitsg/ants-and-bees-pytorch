@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 from model.resnet import resnet18
 from model.inception import inception_v3
@@ -6,6 +7,9 @@ from model.alexnet import alexnet
 from data_loader.data_loader import get_data_loader
 from model.utils import LayerActivations
 from torch.utils.data import DataLoader
+
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 model1 = vgg16(pretrained=False, num_classes=2)
 model2 = resnet18(pretrained=False, num_classes=2)
@@ -38,44 +42,56 @@ data_loader = get_data_loader()
 trn_labels = []
 trn_vgg_features = []
 for d, la in data_loader['train']:
-    out = model1(d)
+    d = d.to(device)
+    with torch.no_grad():
+        out = model1(d)
     out = out.view(out.size(0), -1)
     trn_labels.extend(la)
-    trn_vgg_features.extend(out.data())
+    trn_vgg_features.extend(out.cpu().data.numpy().tolist())
 
 val_labels = []
 val_vgg_features = []
 for d, la in data_loader['val']:
-    out = model1(d)
+    d = d.to(device)
+    with torch.no_grad():
+        out = model1(d)
     out = out.view(out.size(0), -1)
     val_labels.extend(la)
-    val_vgg_features.extend(out.data())
+    val_vgg_features.extend(out.cpu().data.numpy().tolist())
 
 # Extract features for ResNet
 trn_resnet_features = []
 for d, la in data_loader['train']:
-    out = model2(d)
+    d = d.to(device)
+    with torch.no_grad():
+        out = model2(d)
     out = out.view(out.size(0), -1)
-    trn_resnet_features.extend(out.data())
+    trn_resnet_features.extend(out.cpu().data.numpy().tolist())
 
 val_resnet_features = []
 for d, la in data_loader['val']:
-    out = model2(d)
+    d = d.to(device)
+    with torch.no_grad():
+        out = model2(d)
     out = out.view(out.size(0), -1)
-    val_resnet_features.extend(out.data())
+    val_resnet_features.extend(out.cpu().data.numpy().tolist())
 
-# Extract features for Inception
+# Extract features for Alexnet
 trn_alex_features = []
 for d, la in data_loader['train']:
-    out = model3(d)
+    d = d.to(device)
+    with torch.no_grad():
+        out = model3(d)
     out = out.view(out.size(0), -1)
-    trn_alex_features.extend(out.data())
+    trn_alex_features.extend(out.cpu().data.numpy().tolist())
 
 val_alex_features = []
 for d, la in data_loader['val']:
-    out = model3(d)
+    d = d.to(device)
+    with torch.no_grad():
+        out = model3(d)
     out = out.view(out.size(0), -1)
-    val_alex_features.extend(out.data())
+    val_alex_features.extend(out.cpu().data.numpy().tolist())
 
 
 class FeaturesDataset(Dataset):
@@ -98,4 +114,3 @@ val_feat_dset = FeaturesDataset(val_vgg_features, val_resnet_features, val_alex_
 trn_feat_loader = DataLoader(trn_feat_dset,batch_size=64,shuffle=True)
 val_feat_loader = DataLoader(val_feat_dset,batch_size=64)
 
-print(trn_feat_loader)
