@@ -42,6 +42,8 @@ def main():
     for k, v in config.items():
         print("{:<20} {:<10}".format(k, v))
 
+    print(args)
+    
     # Set device
     if args["use_cuda"]:
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
