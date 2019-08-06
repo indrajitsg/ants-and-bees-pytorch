@@ -26,7 +26,7 @@ parser = argparse.ArgumentParser(description='Test your model')
 parser.add_argument('--resume', type=str2bool, default=False, nargs='?', help='Resume training from checkpoint')
 parser.add_argument('--reset_patience', type=str2bool, default=False, nargs='?', help='Reset patience counter to 0')
 parser.add_argument('--use_cuda', type=str2bool, default=False, nargs='?', help='Use CUDA for training')
-
+parser.add_argument('--model_type', type=str, help='Model types supported: resnet, vgg, inception')
 
 def main():
     """
@@ -62,9 +62,15 @@ def main():
 
     # load model
     print("Loading model...")
-    model = resnet18(pretrained=False, num_classes=2)
+    if args.model_type == 'vgg':
+        model = vgg16(pretrained=False, num_classes=config["num_classes"])
+    elif args.model_type == 'inception':
+        model = inception_v3(pretrained=False, num_classes=config["num_classes"])
+    else:
+        model = resnet18(pretrained=False, num_classes=config["num_classes"])
+
     model = model.to(device)
-    
+
     # define loss criterion
     criterion = nn.CrossEntropyLoss()
 
