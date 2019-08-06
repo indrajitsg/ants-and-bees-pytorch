@@ -52,8 +52,10 @@ def _fit(stage, model, data_loader, batch, device, criterion, optimizer):
     return total_loss, total_acc, model
 
 
-def train_model(model, train_loader, val_loader, device, criterion, optimizer,
-                scheduler, resume, new_model, num_epochs=50, patience=10):
+def train_model(model, data_loaders, device, criterion, optimizer, scheduler,
+                num_epochs, patience, epoch, best_accuracy, best_loss,
+                train_losses, train_accuracy, val_losses, val_accuracy,
+                elapsed_time, patience_counter, checkpoint, best_model):
 
     """
     Model trainer function. Incorporates scheduler, resume, early stopping,
@@ -88,37 +90,28 @@ def train_model(model, train_loader, val_loader, device, criterion, optimizer,
     since = time.time()
 
     # define patience counter for early stopping
-    patience_counter = 0
+    patience_counter = patience_counter
 
     # Initialize best accuracy to 0
-    best_acc = 0.0
-    best_loss = 0.0
-
-    # Define average loss and average accuracy variables
-    avg_loss = 0
-    avg_acc = 0
-    avg_loss_val = 0
-    avg_acc_val = 0
-
-    # Define lists to record loss and accuracy over epochs for plotting
-    train_losses, train_accuracy = [], []
-    val_losses, val_accuracy = [], []
+    best_acc = best_accuracy
+    best_loss = best_loss
 
     # Compute batch size - used only in printing log
-    train_batches = len(train_loader)
-    val_batches = len(val_loader)
+    train_batches = len(data_loaders['train'])
+    val_batches = len(data_loaders['val'])
 
-    # Capture size of the datasets to compute average loss and accuracy
+    # Capture size of the data sets to compute average loss and accuracy
     train_size = 0
     val_size = 0
-    for d, l in train_loader:
+
+    for d, l in data_loaders['train']:
         train_size = train_size + len(d)
 
-    for d, l in val_loader:
+    for d, l in data_loaders['val']:
         val_size = val_size + len(d)
 
     # Starting epochs
-    for epoch in range(num_epochs):
+    for epoch in range(epoch, num_epochs):
 
         # Check for auto stop
         with open('utils/autostop.txt', 'rt') as f:
@@ -132,23 +125,10 @@ def train_model(model, train_loader, val_loader, device, criterion, optimizer,
         # Print current learning rate
         print("Learning Rate: {}".format(optimizer.param_groups[0]['lr']))
 
-        loss_train = 0
-        loss_val = 0
-        acc_train = 0
-        acc_val = 0
-
         # -------------- Model training -------------- #
 
-        if epoch == 0 and resume is True:
-            loss_train, acc_train, model = _fit('eval', model, train_loader,
-                                                train_batches, device,
-                                                criterion, optimizer,
-                                                scheduler)
-        else:
-            loss_train, acc_train, model = _fit('train', model, train_loader,
-                                                train_batches, device,
-                                                criterion, optimizer,
-                                                scheduler)
+        loss_train, acc_train, model = _fit('train', model, data_loaders['train'],
+                                            train_batches, device, criterion, optimizer)
 
         print()
         avg_loss = loss_train / train_size
@@ -158,9 +138,8 @@ def train_model(model, train_loader, val_loader, device, criterion, optimizer,
 
         # -------------- Model validation --------------#
 
-        loss_val, acc_val, model = _fit('eval', model, val_loader, val_batches,
-                                        device, criterion, optimizer,
-                                        scheduler)
+        loss_val, acc_val, model = _fit('eval', model, data_loaders['val'], val_batches,
+                                        device, criterion, optimizer)
 
         avg_loss_val = loss_val / val_size
         avg_acc_val = acc_val / val_size
@@ -180,15 +159,47 @@ def train_model(model, train_loader, val_loader, device, criterion, optimizer,
         if epoch == 0:
             best_acc = avg_acc_val
             best_loss = avg_loss_val
-            torch.save(model.state_dict(), new_model)
+            # save checkpoint
+            torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'scheduler_state_dict': scheduler.state_dict(),
+                'best_accuracy': best_acc,
+                'best_loss': best_loss,
+                'train_accuracy': train_accuracy,
+                'train_losses': train_losses,
+                'val_accuracy': val_accuracy,
+                'val_losses': val_losses,
+                'elapsed_time': elapsed_time,
+                'patience_counter': patience_counter
+            }, checkpoint)
         else:
             if avg_loss_val < best_loss:
                 best_acc = avg_acc_val
                 best_loss = avg_loss_val
                 # set patience counter to 0
                 patience_counter = 0
-                # save the new model weights
-                torch.save(model.state_dict(), new_model)
+                # save checkpoint
+                torch.save({
+                    'epoch': epoch,
+                    'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'scheduler_state_dict': scheduler.state_dict(),
+                    'best_accuracy': best_acc,
+                    'best_loss': best_loss,
+                    'train_accuracy': train_accuracy,
+                    'train_losses': train_losses,
+                    'val_accuracy': val_accuracy,
+                    'val_losses': val_losses,
+                    'elapsed_time': elapsed_time,
+                    'patience_counter': patience_counter
+                }, checkpoint)
+                # save best model
+                torch.save({
+                    model.state_dict(),
+                    best_model
+                })
             else:
                 patience_counter = patience_counter + 1
                 print("Loss has not decreased in {} epochs.".format(patience_counter))
@@ -198,6 +209,23 @@ def train_model(model, train_loader, val_loader, device, criterion, optimizer,
         # Update learning rate
         scheduler.step(avg_loss_val)
 
+        # save checkpoint after every 10 epochs
+        if epoch % 10 == 0:
+            torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'scheduler_state_dict': scheduler.state_dict(),
+                'best_accuracy': best_acc,
+                'best_loss': best_loss,
+                'train_accuracy': train_accuracy,
+                'train_losses': train_losses,
+                'val_accuracy': val_accuracy,
+                'val_losses': val_losses,
+                'elapsed_time': elapsed_time,
+                'patience_counter': patience_counter
+            }, checkpoint)
+
         # Early stopping
         if patience_counter == patience:
             print('-' * 60)
@@ -206,7 +234,7 @@ def train_model(model, train_loader, val_loader, device, criterion, optimizer,
             break
 
     # Capture total time taken
-    elapsed_time = time.time() - since
+    elapsed_time = elapsed_time + time.time() - since
     print()
     print("Training completed in {:.0f}m {:.0f}s".format(elapsed_time // 60, elapsed_time % 60))
     print("Best acc: {:.4f}".format(best_acc))
