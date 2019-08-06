@@ -40,11 +40,15 @@ def main():
         if device == "cpu":
             print("Sorry CUDA is not available")
             return None
+        else:
+            print("Will use CUDA")
     else:
-        device = "cpu"
+        device = torch.device("cpu")
 
     # load dataset
+    print("Loading data...")
     data_loaders = get_data_loader()
+    print("Data loading complete")
     patience_counter = 0
 
     # load model
