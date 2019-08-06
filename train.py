@@ -6,10 +6,10 @@ import torch.optim as optim
 from model.vgg import vgg16
 from model.resnet import resnet18
 from model.inception import inception_v3
+from model.alexnet import alexnet
 from utils.trainer import train_model
 from data_loader.data_loader import get_data_loader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-
 import torch
 
 def str2bool(v):
@@ -66,6 +66,8 @@ def main():
         model = vgg16(pretrained=False, num_classes=config["num_classes"])
     elif args.model_type == 'inception':
         model = inception_v3(pretrained=False, num_classes=config["num_classes"])
+    elif args.model_type == 'alexnet':
+        model = alexnet(pretrained=False, num_classes=config["num_classes"])
     else:
         model = resnet18(pretrained=False, num_classes=config["num_classes"])
 
