@@ -16,18 +16,23 @@ model2 = resnet18(pretrained=False, num_classes=2)
 model3 = alexnet(pretrained=False, num_classes=2)
 
 model1 = nn.Sequential(*list(model1.children())[:-2])
-
+model1 = model1.to(device)
+model1.train(False)
 for p in model1.parameters():
     p.requires_grad = False
 
 # print(model1)
 
 model2 = nn.Sequential(*list(model2.children())[:-2])
+model2 = model2.to(device)
+model2.train(False)
 for p in model2.parameters():
     p.requires_grad = False
 
 # print(model2)
-
+model3 = nn.Sequential(*list(model3.children())[:-2])
+model3 = model3.to(device)
+model3.train(False)
 for p in model3.parameters():
     p.requires_grad = False
 
