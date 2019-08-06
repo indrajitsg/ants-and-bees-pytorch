@@ -108,9 +108,10 @@ class FeaturesDataset(Dataset):
         return len(self.labellst)
 
 
-trn_feat_dset = FeaturesDataset(trn_vgg_features, trn_resnet_features, trn_alex_features, trn_labels)
-val_feat_dset = FeaturesDataset(val_vgg_features, val_resnet_features, val_alex_features, val_labels)
+trn_ensm_dset = FeaturesDataset(trn_vgg_features, trn_resnet_features, trn_alex_features, trn_labels)
+val_ensm_dset = FeaturesDataset(val_vgg_features, val_resnet_features, val_alex_features, val_labels)
 
-trn_feat_loader = DataLoader(trn_feat_dset,batch_size=64,shuffle=True)
-val_feat_loader = DataLoader(val_feat_dset,batch_size=64)
+trn_ensm_loader = DataLoader(trn_ensm_dset,batch_size=64,shuffle=True)
+val_ensm_loader = DataLoader(val_ensm_dset,batch_size=64)
 
+print(trn_ensm_loader)
