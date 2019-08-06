@@ -14,7 +14,7 @@ import torch
 
 
 parser = argparse.ArgumentParser(description='Test your model')
-parser.add_argument('--resume', default=False, 'Resume training from checkpoint')
+parser.add_argument('--resume', default=False, help='Resume training from checkpoint')
 parser.add_argument('--reset_patience', default=False, help='Reset patience counter to 0')
 parser.add_argument('--use_cuda', default=False, help='Use CUDA for training')
 parser.add_argument('--output_model', help='Name of the output model')
