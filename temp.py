@@ -26,11 +26,12 @@ data_loader = get_data_loader()
 trn_labels = []
 trn_vgg_features = []
 for d, la in data_loader['train']:
-    d, la = d.to(device), la.to(device)
+    d, _ = d.to(device), la.to(device)
     out = model1(d)
     out = out.view(out.size(0), -1)
-    trn_labels.extend(la.cpu().data())
-    trn_vgg_features.extend(out.cpu().data())
+    trn_labels.extend(la)
+    trn_vgg_features.extend(out.cpu().data().numpy().tolist())
+    # final_features.extend(o.cpu().data.numpy().tolist())
 
 print(trn_labels)
 print(trn_vgg_features)
