@@ -58,14 +58,13 @@ def main():
     # load dataset
     print("Loading data...")
     data_loaders = get_data_loader()
-    print("Data loading complete")
     patience_counter = 0
 
     # load model
     print("Loading model...")
     model = resnet18(pretrained=False, num_classes=2)
-    print("Model loading complete")
-
+    model = model.to(device)
+    
     # define loss criterion
     criterion = nn.CrossEntropyLoss()
 
