@@ -196,10 +196,7 @@ def train_model(model, data_loaders, device, criterion, optimizer, scheduler,
                     'patience_counter': patience_counter
                 }, checkpoint)
                 # save best model
-                torch.save({
-                    model.state_dict(),
-                    best_model
-                })
+                torch.save(model.state_dict(), best_model)
             else:
                 patience_counter = patience_counter + 1
                 print("Loss has not decreased in {} epochs.".format(patience_counter))
