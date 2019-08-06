@@ -26,8 +26,10 @@ data_loader = get_data_loader()
 trn_labels = []
 trn_vgg_features = []
 for d, la in data_loader['train']:
-    d, _ = d.to(device), la.to(device)
-    out = model1(d)
+    d = d.to(device)
+    with torch.no_grad():
+        out = model1(d)
+
     out = out.view(out.size(0), -1)
     trn_labels.extend(la)
     trn_vgg_features.extend(out.cpu().data().numpy().tolist())
