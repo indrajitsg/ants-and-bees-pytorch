@@ -43,9 +43,9 @@ def main():
         print("{:<20} {:<10}".format(k, v))
 
     print(args)
-    
+
     # Set device
-    if args["use_cuda"]:
+    if args.use_cuda:
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         if device == "cpu":
             print("Sorry CUDA is not available")
@@ -79,7 +79,7 @@ def main():
                                   threshold=config["rop_threshold"], threshold_mode='rel',
                                   cooldown=config["rop_cooldown"])
 
-    if args["resume"]:
+    if args.resume:
         checkpoint = torch.load(config["checkpoint"])
         model.load_state_dict(checkpoint["model_state_dict"])
         optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
@@ -92,7 +92,7 @@ def main():
         val_losses = checkpoint["val_losses"]
         val_accuracy = checkpoint["val_accuracy"]
         elapsed_time = checkpoint["elapsed_time"]
-        if not args["reset_patience"]:
+        if not args.reset_patience:
             patience_counter = checkpoint["patience_counter"]
     else:
         epoch = 0
