@@ -1,6 +1,7 @@
 
 import json
 import argparse
+import torch
 import torch.nn as nn
 import torch.optim as optim
 from model.vgg import vgg16
@@ -8,9 +9,9 @@ from model.resnet import resnet18
 from model.inception import inception_v3
 from model.alexnet import alexnet
 from utils.trainer import train_model
+from utils.logger import setup_logger
 from data_loader.data_loader import get_data_loader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-import torch
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -37,10 +38,12 @@ def main():
     args = parser.parse_args()
     # load runtime configurations
     config = json.load(open("config.json"))
-    print("Training with following configurations")
-    print("{:<20} {:<10}".format('Key', 'Value'))
+    # Setup logger
+    log = setup_logger(name='Training Log', save_dir='outputs/')
+    log.info("Training with following configurations")
+    log.info("{:<20} {:<10}".format('Key', 'Value'))
     for k, v in config.items():
-        print("{:<20} {:<10}".format(k, v))
+        log.info("{:<20} {:<10}".format(k, v))
 
     print(args)
 
