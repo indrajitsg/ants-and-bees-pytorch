@@ -6,7 +6,9 @@ The following models will be trained on the dataset and benchmarked
 
 * VGG16
 * ResNet18
-* Inception V3
-* Ensemble (features from all three of the above)
+* AlexNet
+* Ensemble and features and classify using KPCA-MNL
+
+
 
 

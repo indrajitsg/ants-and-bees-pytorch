@@ -14,9 +14,5 @@
     "rop_cooldown": 0,
     "checkpoint": "outputs/checkpoint_alex1.pth",
     "best_model": "outputs/best_model_alex1.pth",
-    "log_dir": "logging",
-    "batch_log": false,
-    "batch_log_interval": 10,
-    "val_interval": 1,
-    "seed": 317
+    "log_dir": "outputs/"
 }

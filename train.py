@@ -39,7 +39,7 @@ def main():
     # load runtime configurations
     config = json.load(open("config.json"))
     # Setup logger
-    log = setup_logger(name='Training Log', save_dir='outputs/')
+    log = setup_logger(name='Training Log', save_dir=config["log_dir"])
     log.info("Training with following configurations")
     log.info("{:<20} {:<10}".format('Key', 'Value'))
     for k, v in config.items():
@@ -51,24 +51,22 @@ def main():
     if args.use_cuda:
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         if device == "cpu":
-            print("Sorry CUDA is not available")
+            log.info("Sorry CUDA is not available")
             return None
         else:
-            print("Will use CUDA")
+            log.info("Will use CUDA")
     else:
         device = torch.device("cpu")
 
     # load dataset
-    print("Loading data...")
+    log.info("Loading data...")
     data_loaders = get_data_loader()
     patience_counter = 0
 
     # load model
-    print("Loading model...")
+    log.info("Loading model...")
     if args.model_type == 'vgg':
         model = vgg16(pretrained=False, num_classes=config["num_classes"])
-    elif args.model_type == 'inception':
-        model = inception_v3(pretrained=False, num_classes=config["num_classes"])
     elif args.model_type == 'alexnet':
         model = alexnet(pretrained=False, num_classes=config["num_classes"])
     else:
@@ -121,7 +119,7 @@ def main():
                 best_loss=best_loss, train_losses=train_losses, train_accuracy=train_accuracy,
                 val_losses=val_losses, val_accuracy=val_accuracy, elapsed_time=elapsed_time,
                 patience_counter=patience_counter, checkpoint=config["checkpoint"],
-                best_model=config["best_model"])
+                best_model=config["best_model"], logger=log)
 
 
     return None

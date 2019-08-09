@@ -55,29 +55,31 @@ def _fit(stage, model, data_loader, batch, device, criterion, optimizer):
 def train_model(model, data_loaders, device, criterion, optimizer, scheduler,
                 num_epochs, patience, epoch, best_accuracy, best_loss,
                 train_losses, train_accuracy, val_losses, val_accuracy,
-                elapsed_time, patience_counter, checkpoint, best_model):
+                elapsed_time, patience_counter, checkpoint, best_model,
+                logger):
 
     """
     Model trainer function. Incorporates scheduler, resume, early stopping,
     temp_scaling.
 
     Args:
-        model         : the model object
-        train_loader  : the train data loader. No train-validation splitting
-                        will happen internally
-        val_loader    : the validation data loader. Used to check accuracy and
-                        perform early stopping
-        device        : the type of device. Should be 'cuda' if GPU is
-                        available
-        criterion     : loss criterion to use. Eg. nn.CrossEntropyLoss()
-        optimizer     : optimizer to use. Eg. torch.optim.SGD()
-        scheduler     : scheduler for reducing the learning rate at predefined
-                        epochs. Eg. torch.optim.lr_scheduler.StepLR()
-        resume        : True/False if you are resuming training
-        new_model     : Path to new model to be saved
-        num_epochs    : number of epochs (int) default 50
-        patience      : number of epochs to wait before early stopping kicks
-                        in, default 10
+        model           : the checkpoint object
+        data_loaders    : dictionary of data loaders. The keys should be 'train'
+                          and 'val' for training and validation respectively
+        device          : the type of device. Should be 'cuda' if GPU is
+                          available
+        criterion       : loss criterion to use. Eg. nn.CrossEntropyLoss()
+        optimizer       : optimizer to use. Eg. torch.optim.SGD()
+        scheduler       : scheduler for reducing the learning rate at predefined
+                          epochs. Eg. torch.optim.lr_scheduler.StepLR()
+        num_epochs      : number of epochs (int)
+        patience        : number of epochs to wait before early stopping happens
+        epoch           : epoch number till last checkpoint
+        best_accuracy   : best accuracy till last checkpoint
+        best_loss       : best loss till last checkpoint
+        train_losses    : list of training losses from previous epochs
+        train_accuracy  :
+
 
     Returns:
         None          : The function saves the model state dict in the
