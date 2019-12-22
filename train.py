@@ -1,13 +1,16 @@
 
 import json
 import argparse
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
+
 from model.vgg import vgg16
 from model.resnet import resnet18
 from model.inception import inception_v3
 from model.alexnet import alexnet
+from model.efficientnet import EfficientNet
 from utils.trainer import train_model
 from utils.logger import setup_logger
 from data_loader.data_loader import get_data_loader
